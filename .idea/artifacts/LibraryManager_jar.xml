@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="LibraryManager:jar">
+    <output-path>$USER_HOME$/Desktop/JAVA/Java大作业</output-path>
+    <root id="archive" name="LibraryManager.jar">
+      <element id="module-output" name="LibraryManager" />
+    </root>
+  </artifact>
+</component>
