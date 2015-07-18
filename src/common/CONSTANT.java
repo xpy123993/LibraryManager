@@ -14,7 +14,10 @@ public final class CONSTANT {
 			ADDBOOK = 1,
 			DELBOOK = 2,
 			EDITBOOK = 3,
-			FINDBOOK = 4;
+			FINDBOOK = 4,
+			BOOKAMOUNT = 5;
+
+	public final static int ITEMPERPAGE = 20;
 	
 	public final static String LOGFILE = "server.log",
 			LIBRARYPATH = "Library.dat";

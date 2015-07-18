@@ -61,8 +61,8 @@ public class Book implements Serializable ,Comparable<Object>{
 	}
 	
 	public void copyFrom(Book b){
-		bookName = b.bookName;
-		bookAuthor = b.bookAuthor;
+		bookName = "" + b.bookName;
+		bookAuthor = "" + b.bookAuthor;
 		bookID = b.bookID;
 		cost = b.cost;
 	}

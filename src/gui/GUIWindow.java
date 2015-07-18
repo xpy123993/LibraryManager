@@ -3,6 +3,9 @@ package gui;
 import network.MainClient;
 
 import javax.swing.*;
+
+import common.CONSTANT;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,9 +22,12 @@ import java.awt.event.MouseEvent;
 public class GUIWindow {
 
 	private JFrame frame;
-	private JTable table;
 	private MyTableModel tableModel;
 	private MainClient mainClient = null;
+	private JTable table;
+	private JTextField textField;
+	private JComboBox comboBox;
+	private JLabel statusLabel;
 	/**
 	 * Launch the application.
 	 */
@@ -56,7 +62,7 @@ public class GUIWindow {
 		frame = new JFrame();
 		frame.setFont(new Font("ÐÂËÎÌå", Font.PLAIN, 14));
 		frame.setTitle("\u56FE\u4E66\u7BA1\u7406\u7CFB\u7EDF \u5BA2\u6237\u7AEF");
-		frame.setBounds(100, 100, 884, 530);
+		frame.setBounds(100, 100, 884, 606);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JMenuBar menuBar = new JMenuBar();
@@ -110,69 +116,104 @@ public class GUIWindow {
 		JMenuItem about = new JMenuItem("\u5173\u4E8E");
 		about.setFont(new Font("Î¢ÈíÑÅºÚ", Font.PLAIN, 14));
 		menu_2.add(about);
+		frame.getContentPane().setLayout(null);
 		
 		table = new JTable();
-		
-		tableModel = new MyTableModel();
-		
-		table.setModel(tableModel);
-		table.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12)); // ÉèÖÃ×ÖÌå
-
-		table.setFillsViewportHeight(true); // ¸ß¶ÈºÍ¹ö¶¯´°¸ñµÄ¸ß¶ÈÒ»ÖÂ
-		table.getColumnModel().getColumn(0).setPreferredWidth(100);
-		table.getColumnModel().getColumn(1).setPreferredWidth(100);
-		table.getColumnModel().getColumn(2).setPreferredWidth(100);
-		table.getColumnModel().getColumn(3).setPreferredWidth(100);
 		table.setRowHeight(22);
+		table.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		table.setFillsViewportHeight(true);
+		table.setBounds(0, 241, 866, 240);
+		//frame.getContentPane().add(table);
 
-		JScrollPane jscrollPane = new JScrollPane(table);
-		
-		JPopupMenu popupMenu = new JPopupMenu();
-		addPopup(table, popupMenu);
-		
-		JMenuItem menuItem = new JMenuItem("\u4FEE\u6539");
-		menuItem.setFont(new Font("Î¢ÈíÑÅºÚ", Font.PLAIN, 14));
-		popupMenu.add(menuItem);
-		
-		JMenuItem menuItem_1 = new JMenuItem("\u5220\u9664");
-		menuItem_1.setFont(new Font("Î¢ÈíÑÅºÚ", Font.PLAIN, 14));
-		popupMenu.add(menuItem_1);
-		
-		menuItem.addActionListener(new ActionListener(){
+		JLabel label = new JLabel("\u7B2C");
+		label.setBounds(86, 10, 21, 15);
+		frame.getContentPane().add(label);
+		label.setFont(new Font("Î¢ÈíÑÅºÚ", Font.PLAIN, 12));
 
+		JLabel label_1 = new JLabel("\u9875");
+		label_1.setBounds(169, 10, 21, 15);
+		frame.getContentPane().add(label_1);
+		label_1.setFont(new Font("Î¢ÈíÑÅºÚ", Font.PLAIN, 12));
+
+		comboBox = new JComboBox();
+		comboBox.setBounds(109, 7, 50, 21);
+		comboBox.setFont(new Font("Î¢ÈíÑÅºÚ", Font.PLAIN, 12));
+		frame.getContentPane().add(comboBox);
+
+		textField = new JTextField();
+		textField.setBounds(607, 6, 148, 21);
+		frame.getContentPane().add(textField);
+		textField.setColumns(10);
+		textField.setFont(new Font("Î¢ÈíÑÅºÚ", Font.PLAIN, 12));
+
+		JButton btnNewButton = new JButton("\u641C\u7D22");
+		btnNewButton.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e){
-				int index = table.getSelectedRow();
-				if(index == -1) return;
-				
-				EditDialog ed = new EditDialog("ÐÞ¸ÄÍ¼ÊéÐÅÏ¢");
-				ed.setModal(true);
-				ed.setBook(tableModel.bookSet.get(index));
-				ed.setVisible(true);
-				
-				mainClient.EditBook(index, ed.getBook());
-				
-				tableModel.bookSet.get(index).copyFrom(ed.getBook());
-				table.repaint();
+			public void actionPerformed(ActionEvent e) {
+				tableModel.changeList(mainClient.FindBook(textField.getText()));
+				//table.repaint();
 			}
 		});
-		
-		menuItem_1.addActionListener(new ActionListener(){
+		btnNewButton.setBounds(765, 5, 93, 23);
+		btnNewButton.setFont(new Font("Î¢ÈíÑÅºÚ", Font.PLAIN, 12));
+		frame.getContentPane().add(btnNewButton);
+
+		tableModel = new MyTableModel();
+		table.setModel(tableModel);
+
+		final JPopupMenu popupMenu = new JPopupMenu();
+		addPopup(table, popupMenu);
+
+		JMenuItem pop_edit = new JMenuItem("\u4FEE\u6539");
+		pop_edit.setFont(new Font("Î¢ÈíÑÅºÚ", Font.PLAIN, 14));
+		popupMenu.add(pop_edit);
+
+		JMenuItem pop_new = new JMenuItem("\u65B0\u5EFA");
+		pop_new.setFont(new Font("Î¢ÈíÑÅºÚ", Font.PLAIN, 14));
+		popupMenu.add(pop_new);
+
+		JMenuItem pop_del = new JMenuItem("\u5220\u9664");
+		pop_del.setFont(new Font("Î¢ÈíÑÅºÚ", Font.PLAIN, 14));
+		popupMenu.add(pop_del);
+
+		JScrollPane scrollPane = new JScrollPane(table);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.setBounds(0, 34, 868, 477);
+		frame.getContentPane().add(scrollPane);
+
+		JButton btnPrevios = new JButton("Back");
+		btnPrevios.addActionListener(new ActionListener() {
 			
 			@Override
-			public void actionPerformed(ActionEvent e){
-				int index = table.getSelectedRow();
-				if(index == -1) return;
-				
-				mainClient.DelBook(index);
-				tableModel.bookSet.remove(index);
-				
-				table.repaint();
+			public void actionPerformed(ActionEvent e) {
+				if (comboBox.getSelectedIndex() != 0 && comboBox.getItemCount() != 0)
+					comboBox.setSelectedIndex(comboBox.getSelectedIndex() - 1);
 			}
 		});
-		
-		jscrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		frame.getContentPane().add(jscrollPane);
+		btnPrevios.setBounds(10, 6, 66, 23);
+		btnPrevios.setFont(new Font("Î¢ÈíÑÅºÚ", Font.PLAIN, 12));
+		frame.getContentPane().add(btnPrevios);
+
+		JButton btnNext = new JButton("Next");
+		btnNext.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (comboBox.getSelectedIndex() != comboBox.getItemCount() - 1 && comboBox.getItemCount() != 0)
+					comboBox.setSelectedIndex(comboBox.getSelectedIndex() + 1);
+			}
+		});
+		btnNext.setBounds(200, 6, 66, 23);
+		btnNext.setFont(new Font("Î¢ÈíÑÅºÚ", Font.PLAIN, 12));
+		frame.getContentPane().add(btnNext);
+
+		statusLabel = new JLabel("\u5C31\u7EEA");
+		statusLabel.setFont(new Font("Î¢ÈíÑÅºÚ", Font.PLAIN, 14));
+		statusLabel.setBounds(10, 521, 848, 15);
+		frame.getContentPane().add(statusLabel);
+
+		JSeparator separator_1 = new JSeparator();
+		separator_1.setBounds(0, 513, 868, 2);
+		frame.getContentPane().add(separator_1);
 		
 		connect.addActionListener(new ActionListener(){
 			
@@ -182,66 +223,89 @@ public class GUIWindow {
 				cd.setModal(true);
 				cd.setVisible(true);
 				if(cd.ret == 0){
-					mainClient.connectTo(cd.ipAddress);
-					if(!mainClient.unreachble())
-						tableModel.bookSet = mainClient.ListBook();
-					table.repaint();
+
+					if (mainClient.connectTo(cd.ipAddress)) {
+						if (!mainClient.unreachble()) {
+							int bookAmount = mainClient.getBookAmount();
+							int pageAmount = (bookAmount - 1) / CONSTANT.ITEMPERPAGE;
+							//tableModel.bookSet = mainClient.ListBook(0);
+							comboBox.removeAllItems();
+							for (int i = 0; i < pageAmount + 1; i++)
+								comboBox.addItem("" + (i + 1));
+						}
+						//table.repaint();
+						statusLabel.setText("Connect Success.");
+					} else statusLabel.setText("Connect Failed.Check Internet.");
 				}
 					
 			}
 		});
-		
-		newBook.addActionListener(new ActionListener(){
 
+		ActionListener addActionListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				EditDialog ed = new EditDialog("New Book");
+				EditDialog ed = new EditDialog("Add Book Info");
 				ed.setModal(true);
 				ed.setVisible(true);
 				
 				if(ed.status == 0){
-					tableModel.bookSet.add(ed.getBook());
 					mainClient.AddBook(ed.getBook());
-					table.repaint();
+					tableModel.changeList(mainClient.ListBook(comboBox.getSelectedIndex()));
+					//table.repaint();
 				}
 				
 			}
-			
-		});
-		
-		editBook.addActionListener(new ActionListener(){
-			
+		};
+
+		ActionListener editActionListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e){
-				
-				int index = table.getSelectedRow();
-				if(index == -1) return;
-				
-				EditDialog ed = new EditDialog("Edit Book");
+				int itemIndex = table.getSelectedRow();
+				int pageIndex = comboBox.getSelectedIndex();
+
+				if (itemIndex == -1) return;
+
+				EditDialog ed = new EditDialog("Edit Book Info");
 				ed.setModal(true);
-				ed.setBook(tableModel.bookSet.get(index));
+				ed.setBook(tableModel.getBook(itemIndex));
 				ed.setVisible(true);
-				
-				mainClient.EditBook(index, ed.getBook());
-				
-				tableModel.bookSet.get(index).copyFrom(ed.getBook());
-				table.repaint();
+				if (ed.status == 0) {
+					mainClient.EditBook(itemIndex, ed.getBook());
+					tableModel.changeList(mainClient.ListBook(pageIndex));
+					//table.repaint();
+				}
 			}
-		});
-		
-		delBook.addActionListener(new ActionListener(){
-			
+		};
+
+		ActionListener delActionListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e){
-				
-				int index = table.getSelectedRow();
-				if(index == -1) return;
-				
-				mainClient.DelBook(index);
-				tableModel.bookSet.remove(index);
-				
-				table.repaint();
+				int itemIndex = table.getSelectedRow();
+				int pageIndex = comboBox.getSelectedIndex();
+
+				if (itemIndex == -1) return;
+
+				mainClient.DelBook(itemIndex);
+				tableModel.changeList(mainClient.ListBook(pageIndex));
+				//table.repaint();
+			}
+		};
+
+		newBook.addActionListener(addActionListener);
+		delBook.addActionListener(delActionListener);
+		editBook.addActionListener(editActionListener);
+
+		pop_new.addActionListener(addActionListener);
+		pop_del.addActionListener(delActionListener);
+		pop_edit.addActionListener(editActionListener);
+
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					popupMenu.show(table, e.getX(), e.getY());
+				}
 			}
 		});
 		
@@ -250,9 +314,9 @@ public class GUIWindow {
 			public void actionPerformed(ActionEvent e){
 				
 				mainClient.Close();
-				tableModel.bookSet.clear();
-				table.repaint();
-				
+				tableModel.clear();
+				//table.repaint();
+				statusLabel.setText("Client connect closed.");
 			}
 		});
 		
@@ -261,7 +325,7 @@ public class GUIWindow {
 			public void actionPerformed(ActionEvent e){
 				frame.setVisible(false);
 				frame.dispose();
-				
+				System.exit(0);
 			}
 		});
 		
@@ -272,8 +336,8 @@ public class GUIWindow {
 				fw.setModal(true);
 				fw.setVisible(true);
 				if(fw.ret == 0){
-					tableModel.bookSet = mainClient.FindBook(fw.bookName);;
-					table.repaint();
+					tableModel.changeList(mainClient.FindBook(fw.bookName));
+					//table.repaint();
 				}
 			}
 		});
@@ -286,6 +350,18 @@ public class GUIWindow {
 				aw.setVisible(true);
 			}
 		});
+
+		comboBox.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if (comboBox.getSelectedIndex() != -1)
+					tableModel.changeList(mainClient.ListBook(comboBox.getSelectedIndex()));
+				//table.repaint();
+			}
+
+		});
 	}
 	
 	@Override
@@ -295,22 +371,5 @@ public class GUIWindow {
 	}
 
 	private static void addPopup(Component component, final JPopupMenu popup) {
-		component.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showMenu(e);
-				}
-			}
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showMenu(e);
-				}
-			}
-			private void showMenu(MouseEvent e) {
-				popup.show(e.getComponent(), e.getX(), e.getY());
-			}
-		});
 	}
 }

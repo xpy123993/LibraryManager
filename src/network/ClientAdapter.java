@@ -101,9 +101,11 @@ public class ClientAdapter implements ServerInterface{
 		}
 		
 		void SendBookArray(ArrayList<Book> bookSet){
-			sendInt(bookSet.size());
-			for(Book book : bookSet)
-				sendBook(book);
+			try {
+				oos.writeObject(bookSet);
+			} catch (Exception e) {
+				perror("SendBookArray", e);
+			}
 		}
 		
 		
@@ -125,8 +127,9 @@ public class ClientAdapter implements ServerInterface{
 				
 				switch(command){
 				case CONSTANT.LISTBOOK:
-					SendBookArray(library.getBookList());
-					generateLog("Get booklist");
+					oper_index = readInt();
+					SendBookArray(library.getBookList(oper_index));
+					generateLog("Get booklist,page:" + oper_index);
 					break;
 				case CONSTANT.ADDBOOK:
 					b = readBook();
@@ -148,7 +151,9 @@ public class ClientAdapter implements ServerInterface{
 					SendBookArray(library.findBook(t));
 					generateLog("Search book,search name:" + t);
 					break;
-					
+					case CONSTANT.BOOKAMOUNT:
+						sendInt(library.getBookSize());
+						break;
 					default:
 						System.out.println("ClientAdapter:Unkown Command :" + command);
 				}

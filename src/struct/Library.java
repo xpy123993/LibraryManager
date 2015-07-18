@@ -3,10 +3,13 @@ package struct;
 import java.io.*;
 import java.util.*;
 
+import common.CONSTANT;
+
 public class Library {
 	
 	private String savfile = "";
 	private ArrayList<Book> bookSet = new ArrayList<Book>();
+	private PageSplitter<Book> bookPage = new PageSplitter<Book>();
 	
 	public Library(String savfile){
 		this.savfile = savfile;
@@ -20,13 +23,11 @@ public class Library {
 			return;
 		try{
 			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(storeFile));
-			int count = ois.readInt();
-			while(count-- > 0){
-				Object o = ois.readObject();
-				if(o instanceof Book)
-					bookSet.add((Book) o);
-			}
+			Object o = ois.readObject();
+			bookSet = (ArrayList<Book>) o;
 			ois.close();
+			Collections.sort(bookSet);
+			bookPage.setSource(bookSet);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -37,33 +38,39 @@ public class Library {
 		
 		try{
 			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(savfile));
-			oos.writeInt(bookSet.size());
-			for(Book b : bookSet)
-				oos.writeObject(b);
+			oos.writeObject(bookSet);
 			oos.close();
 			
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 	}
-	
-	public synchronized ArrayList<Book> getBookList(){
-		Collections.sort(bookSet);
-		return bookSet;
+
+	public synchronized ArrayList<Book> getBookList(int page) {
+
+		ArrayList<Book> ret = new ArrayList<Book>();
+		bookPage.clear();
+
+		for (int i = page * CONSTANT.ITEMPERPAGE; i < (page + 1) * CONSTANT.ITEMPERPAGE && i < bookSet.size(); i++) {
+			bookPage.addItemIndex(i);
+		}
+		return bookPage.getPage();
 	}
 	
 	public synchronized ArrayList<Book> findBook(String bookName){
 		ArrayList<Book> result = new ArrayList<Book>();
-		for(Book b : bookSet)
-			if(b.getBookName().indexOf(bookName)!=-1)
-				result.add(b);
-		Collections.sort(result);
-		return result;
+		bookPage.clear();
+		for (int i = 0; i < bookSet.size(); i++) {
+			if (bookSet.get(i).getBookName().indexOf(bookName) != -1) {
+				bookPage.addItemIndex(i);
+			}
+		}
+
+		return bookPage.getPage();
 	}
 	
 	public synchronized void editBook(int index, Book b){
-		Book s = bookSet.get(index);
-		s.copyFrom(b);
+		bookPage.set(index, b);
 		store();
 	}
 	
@@ -73,19 +80,20 @@ public class Library {
 	}
 	
 	public synchronized void delBook(int index){
-		bookSet.remove(index);
+		bookPage.remove(index);
 		store();
 	}
+
 
 	public synchronized int getBookSize(){
 		return bookSet.size();
 	}
 	
 	public String getBookName(int index){
-		return bookSet.get(index).getBookName();
+		return bookPage.get(index).getBookName();
 	}
 	
 	public int getBookID(int index){
-		return bookSet.get(index).getBookID();
+		return bookPage.get(index).getBookID();
 	}
 }

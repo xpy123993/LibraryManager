@@ -2,14 +2,30 @@ package gui;
 
 import java.util.ArrayList;
 
+import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
-import struct.*;
+import struct.Book;
 
 public class MyTableModel implements TableModel {
 
-	public ArrayList<Book> bookSet;
+	private ArrayList<Book> bookSet;
+	private ArrayList<TableModelListener> listenerSet = new ArrayList<TableModelListener>();
+
+	public void changeList(ArrayList<Book> list) {
+		bookSet = list;
+		doChange();
+	}
+
+	public Book getBook(int index) {
+		return bookSet.get(index);
+	}
+
+	public void clear() {
+		bookSet.clear();
+		doChange();
+	}
 	
 	public MyTableModel(){
 		super();
@@ -82,13 +98,24 @@ public class MyTableModel implements TableModel {
 	@Override
 	public void addTableModelListener(TableModelListener l) {
 		// TODO Auto-generated method stub
-
+		removeTableModelListener(l);
+		listenerSet.add(l);
 	}
 
 	@Override
 	public void removeTableModelListener(TableModelListener l) {
 		// TODO Auto-generated method stub
+		for (int i = 0; i < listenerSet.size(); i++) {
+			if (l.equals(listenerSet.get(i))) {
+				listenerSet.remove(i);
+				break;
+			}
+		}
+	}
 
+	private void doChange() {
+		for (TableModelListener tl : listenerSet)
+			tl.tableChanged(new TableModelEvent(this));
 	}
 
 }
